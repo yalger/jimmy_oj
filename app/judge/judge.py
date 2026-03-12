@@ -1,20 +1,24 @@
-from typing import Tuple
+from sqlalchemy.orm import Session
 
 from app.judge.runner import run_python
+from app.models.testcase import Testcase
+    
+def judge_problem(problem_id: int, code: str, db: Session):
 
-def judge(code: str, input_data: str, expected_output: str) -> Tuple[str, str]:
+    testcases = db.query(Testcase).filter(
+        Testcase.problem_id == problem_id
+    ).all()
 
-    result = run_python(code, input_data)
+    for tc in testcases:
 
-    if result.get("timeout"):
-        return "Time Limit Exceeded", ""
+        result = run_python(code, tc.input_data)
 
-    if result["returncode"] != 0:
-        return "Runtime Error", result["stderr"]
+        if result.get("timeout"):
+            return "TLE"
 
-    output = result["stdout"].strip()
+        output = result["stdout"].strip()
 
-    if output == expected_output.strip():
-        return "Accepted", output
-    else:
-        return "Wrong Answer", output
+        if output != tc.output_data.strip():
+            return "WA"
+
+    return "AC"
