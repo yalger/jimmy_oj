@@ -21,8 +21,12 @@ def judge_submission(submission_id):
         db
     )
 
-    submission.status = "Finished"
-    submission.result = result
+    submission.status = result["status"]
+    if result["status"] == 'TLE':
+        submission.wrong_tc_id = result["wrong_tc_id"]
+    elif result["status"] == 'WA':
+        submission.wrong_tc_id = result["wrong_tc_id"]
+        submission.wrong_output = result["wrong_output"]
     db.commit()
 
     db.close()

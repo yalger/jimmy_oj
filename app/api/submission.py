@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
-from app.models import submission
 from app.models.submission import Submission
 from app.schemas.response import APIResponse
 from app.schemas.submission import SubmitRequest
@@ -24,17 +23,30 @@ def get_submission(
             message="Submission not found"
         )
 
-    return APIResponse(
-        success=True,
-        message="Submission found",
-        data={
-            "submission_id": submission.id,
-            "user_id": submission.user_id,
-            "problem_id": submission.problem_id,
-            "status": submission.status,
-            "result": submission.result
-        }
-    )
+    if submission.status == 'WA':
+        return APIResponse(
+            success=True,
+            message="Submission found",
+            data={
+                "submission_id": submission.id,
+                "user_id": submission.user_id,
+                "problem_id": submission.problem_id,
+                "status": submission.status,
+                "wrong_tc_id": submission.wrong_tc_id,
+                "wrong_output": submission.wrong_output
+            }
+        )
+    else:
+        return APIResponse(
+            success=True,
+            message="Submission found",
+            data={
+                "submission_id": submission.id,
+                "user_id": submission.user_id,
+                "problem_id": submission.problem_id,
+                "status": submission.status
+            }
+        )
 
 @router.post("/submit", response_model=APIResponse)
 def submit(
@@ -63,7 +75,6 @@ def submit(
             "submission_id": submission.id,
             "user_id": submission.user_id,
             "problem_id": submission.problem_id,
-            "status": submission.status,
-            "result": submission.result
+            "status": submission.status
         }
     )

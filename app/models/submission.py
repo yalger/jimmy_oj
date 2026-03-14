@@ -1,3 +1,5 @@
+from unittest import expectedFailure
+
 from sqlalchemy import Integer, Text, ForeignKey, String, text
 from sqlalchemy.orm import mapped_column
 from app.db.base import Base
@@ -27,4 +29,9 @@ class Submission(Base):
         default="Pending"
     )
 
-    result = mapped_column(Text)
+    wrong_tc_id = mapped_column(
+        Integer,
+        ForeignKey("testcases.id"),
+    )
+
+    wrong_output = mapped_column(Text)
