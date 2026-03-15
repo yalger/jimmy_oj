@@ -20,7 +20,6 @@ def problems(db: Session = Depends(get_db)):
                 "problem_id": problem.id,
                 "title": problem.title,
                 "description": problem.description,
-                "time_limit": problem.time_limit
             } for problem in problems
         ]
     )
@@ -45,7 +44,6 @@ def problem_by_title(
             "problem_id": problem.id,
             "title": problem.title,
             "description": problem.description,
-            "time_limit": problem.time_limit
         }
     )
 
@@ -58,7 +56,6 @@ def add_problem(
     problem = Problem(
         title=data.title,
         description=data.description,
-        time_limit=data.time_limit
     )
 
     db.add(problem)

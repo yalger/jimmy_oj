@@ -17,16 +17,20 @@ def judge_submission(submission_id):
 
     result = judge_problem(
         submission.problem_id,
+        submission.language,
         submission.code,
         db
     )
 
     submission.status = result["status"]
-    if result["status"] == 'TLE':
-        submission.wrong_tc_id = result["wrong_tc_id"]
-    elif result["status"] == 'WA':
-        submission.wrong_tc_id = result["wrong_tc_id"]
-        submission.wrong_output = result["wrong_output"]
+    match(submission.status):
+        case "CE":
+            submission.wrong_output = result["output"]
+        case "TLE" | "MLE":
+            submission.wrong_tc_id = result["tc_id"]
+        case "RE" | "WA":
+            submission.wrong_tc_id = result["tc_id"]
+            submission.wrong_output = result["output"]
     db.commit()
 
     db.close()

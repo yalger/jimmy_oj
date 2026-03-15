@@ -23,30 +23,20 @@ def get_submission(
             message="Submission not found"
         )
 
-    if submission.status == 'WA':
-        return APIResponse(
-            success=True,
-            message="Submission found",
-            data={
-                "submission_id": submission.id,
-                "user_id": submission.user_id,
-                "problem_id": submission.problem_id,
-                "status": submission.status,
-                "wrong_tc_id": submission.wrong_tc_id,
-                "wrong_output": submission.wrong_output
-            }
-        )
-    else:
-        return APIResponse(
-            success=True,
-            message="Submission found",
-            data={
-                "submission_id": submission.id,
-                "user_id": submission.user_id,
-                "problem_id": submission.problem_id,
-                "status": submission.status
-            }
-        )
+    return APIResponse(
+        success=True,
+        message="Submission found",
+        data={
+            "submission_id": submission.id,
+            "user_id": submission.user_id,
+            "problem_id": submission.problem_id,
+            "code": submission.code,
+            "language": submission.language,
+            "status": submission.status,
+            "wrong_tc_id": submission.wrong_tc_id,
+            "wrong_output": submission.wrong_output
+        }
+    )
 
 @router.post("/submit", response_model=APIResponse)
 def submit(
@@ -58,6 +48,7 @@ def submit(
     submission = Submission(
         user_id=1,
         problem_id=data.problem_id,
+        language=data.language,
         code=data.code,
         status="Pending"
     )

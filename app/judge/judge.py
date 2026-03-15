@@ -1,9 +1,7 @@
-from sqlalchemy.orm import Session
-
-from app.judge.runner import run_python
+from app.judge.runner import run_program
 from app.models.testcase import Testcase
     
-def judge_problem(problem_id: int, code: str, db: Session):
+def judge_problem(problem_id, code, language, db):
 
     testcases = db.query(Testcase).filter(
         Testcase.problem_id == problem_id
@@ -11,23 +9,25 @@ def judge_problem(problem_id: int, code: str, db: Session):
 
     for tc in testcases:
 
-        result = run_python(code, tc.input_data)
+        result = run_program(
+            code,
+            language,
+            tc.input_data
+        )
 
-        if result.get("timeout"):
-            return {
-                "status": "TLE",
-                "wrong_tc_id": tc.id
-            }
+        match(result["status"]):
+            case "CE":
+                return result
+            case "TLE" | "MLE" | "RE":
+                result["tc_id"] = tc.id
+                return result
+            case "OK":
+                output = result["output"].strip()
+                if output != tc.output_data.strip():
+                    result["status"] = "WA"
+                    result["tc_id"] = tc.id
+                    return result
+        print(result)
 
-        output = result["stdout"].strip()
-
-        if output != tc.output_data.strip():
-            return {
-                "status": "WA",
-                "wrong_tc_id": tc.id,
-                "wrong_output": output
-            }
-
-    return {
-        "status": "AC"
-    }
+    result["status"] = "AC"
+    return result

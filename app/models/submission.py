@@ -21,6 +21,7 @@ class Submission(Base):
         ForeignKey("problems.id")
     )
 
+    language = mapped_column(String(10))
     code = mapped_column(Text)
 
     status = mapped_column(
