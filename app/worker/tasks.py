@@ -31,6 +31,9 @@ def judge_submission(submission_id):
         case "RE" | "WA":
             submission.wrong_tc_id = result["tc_id"]
             submission.wrong_output = result["output"]
+        case "AC":
+            submission.time_used = result["time"]
+            submission.memory_used = result["memory"]
     db.commit()
 
     db.close()

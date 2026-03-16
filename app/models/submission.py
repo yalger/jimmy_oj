@@ -30,6 +30,9 @@ class Submission(Base):
         default="Pending"
     )
 
+    time_used = mapped_column(Integer)
+    memory_used = mapped_column(Integer)
+
     wrong_tc_id = mapped_column(
         Integer,
         ForeignKey("testcases.id"),

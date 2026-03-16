@@ -44,6 +44,8 @@ def run_program(language, code, input_data):
         "none",
         "--memory",
         "256m",
+        "--memory-swap",
+        "256m",
         "--cpus",
         "1",
         "--pids-limit",
@@ -65,7 +67,8 @@ def run_program(language, code, input_data):
             "status": "TLE"
         }
 
-    match(result.stdout.strip()):
+    output = result.stdout.strip().splitlines()
+    match(output[0]):
         case "STATUS:CE":
             return {
                 "status": "CE",
@@ -75,6 +78,10 @@ def run_program(language, code, input_data):
             return {
                 "status": "TLE"
             }
+        case "STATUS:MLE":
+            return {
+                "status": "MLE"
+            }
         case "STATUS:RE":
             return {
                 "status": "RE",
@@ -83,9 +90,8 @@ def run_program(language, code, input_data):
         case "STATUS:OK":
             return {
                 "status": "OK",
+                "time": int(output[1].split(':')[1]),
+                "memory": int(output[2].split(':')[1]),
                 "output": result.stderr
             }
-    if result.returncode == 137:
-        return {"status": "MLE"}
-    print(result)
     return {"status": "UNKNOWN"}

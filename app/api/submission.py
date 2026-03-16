@@ -33,6 +33,8 @@ def get_submission(
             "code": submission.code,
             "language": submission.language,
             "status": submission.status,
+            "time_used": submission.time_used,
+            "memory_used": submission.memory_used,
             "wrong_tc_id": submission.wrong_tc_id,
             "wrong_output": submission.wrong_output
         }

@@ -8,6 +8,10 @@ RUN apt-get update && apt-get install -y \
     coreutils \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y \
+    time \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY runner.py .

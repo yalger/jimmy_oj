@@ -30,9 +30,15 @@ if compile_cmd:
 with open(INPUT_FILE, "r") as f:
     input_data = f.read()
 
+cmd = [
+    "/usr/bin/time",
+    "-f",
+    "%e %M"
+] + run_cmd
+
 try:
     result = subprocess.run(
-        run_cmd,
+        cmd,
         input=input_data,
         capture_output=True,
         text=True,
@@ -44,9 +50,19 @@ except subprocess.TimeoutExpired:
     sys.exit(0)
 
 if result.returncode != 0:
-    sys.stdout.write("STATUS:RE")
-    sys.stderr.write(result.stderr)
+    if "Command terminated by signal 9" in result.stderr:
+        sys.stdout.write("STATUS:MLE")
+    else:
+        sys.stdout.write("STATUS:RE")
+        sys.stderr.write('\n'.join(result.stderr.split("\n")[:-2]))
     sys.exit(0)
 
-sys.stdout.write("STATUS:OK")
+lines = result.stderr.strip().split()
+
+time_used = int(float(lines[0]) * 1000)
+memory_used = int(lines[1])
+
+sys.stdout.write("STATUS:OK\n")
+sys.stdout.write(f"TIME:{time_used}\n")
+sys.stdout.write(f"MEMORY:{memory_used}")
 sys.stderr.write(result.stdout)

@@ -27,7 +27,6 @@ def judge_problem(problem_id, code, language, db):
                     result["status"] = "WA"
                     result["tc_id"] = tc.id
                     return result
-        print(result)
 
     result["status"] = "AC"
     return result
