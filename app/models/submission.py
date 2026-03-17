@@ -32,10 +32,5 @@ class Submission(Base):
 
     time_used = mapped_column(Integer)
     memory_used = mapped_column(Integer)
-
-    wrong_tc_id = mapped_column(
-        Integer,
-        ForeignKey("testcases.id"),
-    )
-
+    wrong_tc_id = mapped_column(Integer)
     wrong_output = mapped_column(Text)

@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
@@ -61,6 +63,10 @@ def add_problem(
     db.add(problem)
     db.commit()
     db.refresh(problem)
+
+    problem.data_path = f"problem_{problem.id:04}"
+    db.commit()
+    os.makedirs(os.path.join(os.getenv("DATA_DIR"), problem.data_path), exist_ok=True)
 
     return APIResponse(
         success=True,

@@ -1,32 +1,30 @@
+from app.judge.testcase_loader import load_testcases
 from app.judge.runner import run_program
-from app.models.testcase import Testcase
+from app.models.problem import Problem
     
-def judge_problem(problem_id, code, language, db):
+def judge_problem(problem: Problem, code, language):
 
-    testcases = db.query(Testcase).filter(
-        Testcase.problem_id == problem_id
-    ).all()
+    testcases = load_testcases(problem)
 
-    for tc in testcases:
+    for i, (input_data, expected_output) in enumerate(testcases):
 
         result = run_program(
             code,
             language,
-            tc.input_data
+            input_data
         )
 
         match(result["status"]):
             case "CE":
                 return result
             case "TLE" | "MLE" | "RE":
-                result["tc_id"] = tc.id
-                return result
+                result["tc_id"] = i + 1
             case "OK":
                 output = result["output"].strip()
-                if output != tc.output_data.strip():
+                if output != expected_output.strip():
                     result["status"] = "WA"
-                    result["tc_id"] = tc.id
-                    return result
+                    result["tc_id"] = i + 1
+                else:
+                    result["status"] = "AC"
 
-    result["status"] = "AC"
     return result

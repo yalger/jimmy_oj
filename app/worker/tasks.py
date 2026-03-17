@@ -1,9 +1,10 @@
 from app.worker.celery_app import celery_app
 from app.db.database import SessionLocal
 from app.judge.judge import judge_problem
+from app.models.problem import Problem
 from app.models.submission import Submission
 
-from app.models import problem, submission, testcase, user
+from app.models import problem, submission, user
 
 @celery_app.task
 def judge_submission(submission_id):
@@ -15,11 +16,12 @@ def judge_submission(submission_id):
     submission.status = "Running"
     db.commit()
 
+    problem = db.query(Problem).get(submission.problem_id)
+
     result = judge_problem(
-        submission.problem_id,
+        problem,
         submission.language,
         submission.code,
-        db
     )
 
     submission.status = result["status"]

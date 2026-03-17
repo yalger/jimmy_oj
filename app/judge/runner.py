@@ -1,11 +1,12 @@
 import json
+import os
 from pathlib import Path
 import subprocess
 import uuid
 
 from app.judge.languages import LANGUAGES
 
-SUBMISSION_DIR = Path("submissions")
+SUBMISSION_DIR = Path(os.getenv("SUBMISSION_DIR"))
 
 def run_program(language, code, input_data):
 
@@ -72,7 +73,7 @@ def run_program(language, code, input_data):
         case "STATUS:CE":
             return {
                 "status": "CE",
-                "output": result.stderr
+                "output": result.stderr.strip()
             }
         case "STATUS:TLE":
             return {
@@ -85,13 +86,13 @@ def run_program(language, code, input_data):
         case "STATUS:RE":
             return {
                 "status": "RE",
-                "output": result.stderr
+                "output": result.stderr.strip()
             }
         case "STATUS:OK":
             return {
                 "status": "OK",
                 "time": int(output[1].split(':')[1]),
                 "memory": int(output[2].split(':')[1]),
-                "output": result.stderr
+                "output": result.stderr.strip()
             }
     return {"status": "UNKNOWN"}
